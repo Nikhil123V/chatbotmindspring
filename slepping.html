@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sleep Timer and Clock</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    #timer, #clock {
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+    #controls {
+      margin-top: 20px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sleep Timer and Clock</h1>
+  <div id="timer">
+    <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
+  </div>
+  <div id="clock">
+    <span id="current-hours">00</span>:<span id="current-minutes">00</span>
+  </div>
+  <div id="controls">
+    <label for="hours">Set Sleep Hours:</label>
+    <input type="number" id="sleep-hours" min="1" max="12" value="8">
+    <button id="start">Start Sleep Timer</button>
+    <button id="stop">Stop Timer</button>
+  </div>
+  <script>
+    const secondsRemaining = document.getElementById('seconds');
+    const minutesRemaining = document.getElementById('minutes');
+    const hoursRemaining = document.getElementById('hours');
+    const currentHours = document.getElementById('current-hours');
+    const currentMinutes = document.getElementById('current-minutes');
+    const sleepHoursInput = document.getElementById('sleep-hours');
+    const startButton = document.getElementById('start');
+    const stopButton = document.getElementById('stop');
+
+    let timerInterval;
+    let targetTime = null;
+
+    function updateTimer() {
+      if (!targetTime) return;
+
+      const now = new Date();
+      const secondsLeft = Math.floor((targetTime - now) / 1000);
+
+      if (secondsLeft <= 0) {
+        clearTimeout(timerInterval);
+        targetTime = null;
+        secondsRemaining.textContent = '00';
+        minutesRemaining.textContent = '00';
+        hoursRemaining.textContent = '00';
+        return;
+      }
+
+      const hours = Math.floor(secondsLeft / 3600);
+      secondsLeft %= 3600;
+      const minutes = Math.floor(secondsLeft / 60);
+      secondsLeft %= 60;
+
+      hoursRemaining.textContent = hours.toString().padStart(2, '0');
+      minutesRemaining.textContent = minutes.toString().padStart(2, '0');
+      secondsRemaining.textContent = secondsLeft.toString().padStart(2, '0');
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+
+      currentHours.textContent = hours.toString().padStart(2, '0');
+      currentMinutes.textContent = minutes.toString().padStart(2, '0');
+    }
+
+    function startTimer() {
+      const sleepHours = Number(sleepHoursInput.value);
+      const wakeUpTime = new Date();
+      wakeUpTime.setHours(wakeUpTime.getHours() + sleepHours);
+      targetTime = wakeUpTime;
+
+      updateTimer();
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function stopTimer() {
+      clearTimeout(timerInterval);
+      targetTime = null;
+      hoursRemaining.textContent = '00';
+      minutesRemaining.textContent = '00';
+      secondsRemaining.textContent = '00';
+    }
+
+   
